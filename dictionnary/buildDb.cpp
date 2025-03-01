@@ -3,6 +3,8 @@
 #define FILE "files/en_US.txt"
 
 int main(int ac, char **av) {
+    (void)ac;
+    (void)av;
     Logger::setLogger("logger/logger.log", Logger::DEBUG, true);
     std::ifstream readFile(FILE);
     if(!readFile) {
@@ -11,6 +13,7 @@ int main(int ac, char **av) {
     }
     std::string line;
     while(getline(readFile, line)) {
+        Token token = Token(line);
     }
     return 0;
 }
