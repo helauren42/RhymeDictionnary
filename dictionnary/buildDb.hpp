@@ -50,7 +50,7 @@ private:
     }
     size_t findPhonemeStart(const std::wstring my_string) {
         size_t len = my_string.length();
-        size_t i = len -1;
+        int i = len -1;
         const Type type = findType(my_string[i]);
         if(type == CONSONANT){
             while(i > -1 && ipapronunciation::isConsonant(my_string[i]))
