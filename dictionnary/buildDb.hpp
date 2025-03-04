@@ -10,7 +10,7 @@
 #include <codecvt>
 
 #include "MyCppLib/MyCppLib.hpp"
-using namespace Printer;
+using namespace WPrinter;
 
 enum Type{
     CONSONANT,
@@ -52,27 +52,30 @@ private:
         size_t len = my_string.length();
         int i = len -1;
         const Type type = findType(my_string[i]);
-        if(type == CONSONANT){
-            while(i > -1 && ipapronunciation::isConsonant(my_string[i]))
+        if(type == CONSONANT)
+            while(i > 1 && ipapronunciation::isConsonant(my_string[i]))
                 i--;
-        }
-        else{
-            while(i > -1 && ipapronunciation::isVowel(my_string[i]))
+        else
+            while(i > 1 && ipapronunciation::isVowel(my_string[i]))
                 i--;
-        }
-        return i+1;
+        return i;
     }
-    void fetchIpaPronunciations(const std::vector<std::string> &strings_pronunciation)
+    void fetchIpaPronunciations(const std::vector<std::wstring> &strings_pronunciation)
     {
-        for (const std::string& str_pronunciation : strings_pronunciation) {
-            std::wstring my_wstring(str_pronunciation.begin(), str_pronunciation.end());
-            std::wcout << "wstring: " << my_wstring << std::endl;
+        for (std::wstring pronun : strings_pronunciation) {
+            // std::wcout << "str : " << str_pronunciation << std::endl;
             std::vector<std::wstring> phoneme_list;
-            while(my_wstring.size()) {
-                size_t start = findPhonemeStart(my_wstring);
-                std::wstring phoneme = my_wstring.substr(start);
-                my_wstring[start] = 0;
+            while(pronun.size()) {
+                // Logger::wdebug("pronun: ", pronun);
+                size_t start = findPhonemeStart(pronun);
+                // Logger::wdebug("start: ", start);
+                std::wstring phoneme = pronun.substr(start);
+                // Logger::wdebug("phoneme: \'", phoneme, "\'");
+                if(phoneme.size() == 0)
+                    continue;
                 phoneme_list.push_back(phoneme);
+                // Logger::wdebug("phoneme list: ", phoneme_list);
+                pronun = pronun.substr(0, start);
             }
             rev_ipa_pronunciations.push_back(phoneme_list);
             Logger::winfo("rev ipa: ", rev_ipa_pronunciations);
@@ -80,17 +83,29 @@ private:
     }
 
 public:
-    std::string word;
+    std::wstring word;
     std::vector<std::vector<std::wstring>> rev_ipa_pronunciations;
-    Token(std::string &line)
+    Token(std::wstring &line)
     {
-        removeAll(line, "/,");
-        std::vector<std::string> line_split = split<std::vector>(line, WHITE_SPACES);
+        Logger::wdebug("before: ", line);
+        line = wremoveAll(line, L"/ˌ,ˈ");
+        Logger::wdebug("after: ", line);
+        std::vector<std::wstring> line_split = wsplit<std::vector>(line, L" \t\n\r\v\f\u00A0\u200B");
         word = line_split[0];
-        const std::vector<std::string> strings_pronunciation(line_split.begin() + 1, line_split.end());
+        const std::vector<std::wstring> strings_pronunciation(line_split.begin() + 1, line_split.end());
         fetchIpaPronunciations(strings_pronunciation);
     };
     ~Token() {};
 };
 
-// std:ostream& operator<<()
+std::wstring& operator<<(std::wstring& lhs, const Token& token) {
+    lhs += L"word: " + token.word + L"\n";
+    for(auto& pronun : token.rev_ipa_pronunciations){
+        lhs += L"ipa: [ ";
+        for(auto& phoneme : pronun){
+            lhs += phoneme + L' ';
+        }
+        lhs += L"]";
+    }
+    return lhs;
+}

@@ -1,0 +1,12 @@
+a.out
+test*
+.vscode
+*.txt
+TESTER
+.swp
+__pycache__
+*.log
+*.o
+secrets
+.env
+*.log
