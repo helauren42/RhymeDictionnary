@@ -8,7 +8,7 @@ from const import HOST, PORT, PROJECT_DIR
 
 logging.basicConfig(
     level=logging.DEBUG,
-    handlers=[logging.FileHandler(os.path.join(PROJECT_DIR, "logging/server.log"))],
+    handlers=[logging.FileHandler(os.path.join(PROJECT_DIR, "server/logging/server.log"))],
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%H:%M:%S"
 )

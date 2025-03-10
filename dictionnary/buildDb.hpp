@@ -24,7 +24,7 @@ namespace ipapronunciation
     // static constexpr std::array<const wchar_t[3], 8> diphthongs = {
     //     L"aɪ", L"eɪ", L"oʊ", L"aʊ", L"ɔɪ", L"ɪə", L"eə", L"ʊə"
     // };
-    
+
     static bool isConsonant(const wchar_t c) {
         for (auto &cons : consonantFirstChars) {
             if (c == cons) {
@@ -115,14 +115,14 @@ public:
     ~Token() {};
 };
 
-std::wstring& operator<<(std::wstring& lhs, const Token& token) {
-    lhs += L"word: " + token.word + L"\n";
+std::wostream& operator<<(std::wostream& lhs, const Token& token) {
+    lhs << L"word: " + token.word + L"\n";
     for(auto& pronun : token.rev_ipa_pronunciations){
-        lhs += L"ipa: [ ";
+        lhs << L"ipa: [ ";
         for(auto& phoneme : pronun){
-            lhs += phoneme + L' ';
+            lhs << phoneme + L' ';
         }
-        lhs += L"]";
+        lhs << L"]";
     }
     return lhs;
 }
