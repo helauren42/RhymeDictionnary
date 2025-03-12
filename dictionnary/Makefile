@@ -1,17 +1,15 @@
-NAME=buildDb
+NAME = buildDb
 
-SRCS=$(wildcard *.cpp)
-OBJS=$(SRCS:.cpp=.o)
-CFLAGS=-Wall -Werror -Wextra
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:.cpp=.o)
+CFLAGS = -Wall -Werror -Wextra
+FLAGMARIADB = -lmariadb
+INCLUDE = -I/usr/include/mariadb
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	c++ -o $(NAME) $(OBJS)
-	./$(NAME)
-
-%.o: %.cpp
-	c++ $(CFLAGS) -c $< -o $@
+	c++ $(INCLUDE) $(SRCS) $(FLAGMARIADB) -o $(NAME)
 
 clean:
 	rm -f $(OBJS)

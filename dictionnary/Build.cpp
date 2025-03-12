@@ -1,6 +1,6 @@
-#include "buildDb.hpp"
+#include "Build.hpp"
 #include "MyCppLib/Logger/Logger.hpp"
-// #include <cppconn/driver.h>
+#include "Connector.hpp"
 
 struct PATHS {
     static const std::string ProjectDir;
@@ -16,7 +16,8 @@ int main(int ac, char **av) {
     (void)ac;
     (void)av;
     std::locale::global(std::locale("en_US.UTF-8"));
-    Logger::setLogger(PATHS::ProjectDir + "dictionnary/logger/logger.log", Logger::DEBUG, true);
+    Logger::setLogger(PATHS::ProjectDir + "dictionnary/logger/logger.log", Logger::INFO, true);
+    Connector connector;
     std::wifstream readFile(PATHS::DictText);
     if(!readFile) {
         stdErr("Error reading file: " + PATHS::DictText);
