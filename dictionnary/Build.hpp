@@ -8,7 +8,7 @@
 #include <locale>
 #include <codecvt>
 
-#include "MyCppLib/MyCppLib.hpp"
+#include "../MyCppLib/MyCppLib.hpp"
 
 using namespace WPrinter;
 

@@ -57,7 +57,7 @@ class Connector{
             makeQuery("USE rd");
         }
         void initTable() {
-            makeQuery("CREATE TABLE IF NOT EXISTS rd(id INT AUTO_INCREMENT PRIMARY KEY, \
+            makeQuery("CREATE TABLE IF NOT EXISTS dict(id INT AUTO_INCREMENT PRIMARY KEY, \
                 word varchar(255) NOT NULL, \
                 ipa TEXT NOT NULL, \
                 syllables INT NOT NULL \
