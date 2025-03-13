@@ -43,7 +43,6 @@ namespace ipapronunciation
 class Token
 {
 private:
-    std::vector<unsigned int> syllables;
     Type findType(const wchar_t c) {
         if(ipapronunciation::isConsonant(c))
             return CONSONANT;
@@ -90,6 +89,7 @@ private:
     }
 
 public:
+    std::vector<unsigned int> syllables;
     std::wstring word;
     std::vector<std::vector<std::wstring>> rev_ipa_pronunciations;
     Token(std::wstring &line)
@@ -103,7 +103,7 @@ public:
         // Logger::wdebug("word:", word);
         fetchIpaPronunciations(strings_pronunciation);
         setSyllables();
-        // Logger::wdebug("Syllables: ", syllables);
+        // ::wdebug("Syllables: ", syllables);
     };
     ~Token() {};
 };

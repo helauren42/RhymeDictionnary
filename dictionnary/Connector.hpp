@@ -19,12 +19,19 @@ class Connector{
         void addToken(const Token& token){
             std::wstring word = token.word;
             std::wstring pronunciation_split;
-            for(auto& pronun : token.rev_ipa_pronunciations) {
-                for(auto& phoneme: pronun)
+            for(size_t i = 0; i < token.rev_ipa_pronunciations.size(); i++) {
+                std::wstringstream syllables_count;
+                syllables_count << token.syllables[i];
+                const std::vector<std::wstring>& pronun = token.rev_ipa_pronunciations[i];
+                for(auto& phoneme: pronun) {
                     pronunciation_split += phoneme + L" ";
+                }
                 // !!! I AM HERE !!!
-                std::string query = "";
-                makeQuery(query);
+                std::string insert_into("INSERT INTO rd(word, ipa, syllables)");
+                std::wstring beef = L"'" + word + L"', '" + pronunciation_split + L"', " + syllables_count.str() +  L")";
+                std::string beef_str(beef.cbegin(), beef.cend());
+                std::string values(" VALUES (" + beef_str);
+                makeQuery(insert_into + values);
             }
         }
         Connector(): user(fetchUser()), pwd(fetchPwd()) {

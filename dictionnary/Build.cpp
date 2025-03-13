@@ -1,6 +1,7 @@
 #include "Build.hpp"
 #include "MyCppLib/Logger/Logger.hpp"
 #include "Connector.hpp"
+#include "MyCppLib/Printer/Printer.hpp"
 
 struct PATHS {
     static const std::string ProjectDir;
@@ -28,7 +29,8 @@ int main(int ac, char **av) {
     std::list<Token> tokens;
     while(getline(readFile, line)) {
         Token token = Token(line);
-        Logger::winfo(token);
+        // Logger::winfo(token);
+        connector.addToken(token);
         // tokens.push_back(token);
     }
     return 0;
