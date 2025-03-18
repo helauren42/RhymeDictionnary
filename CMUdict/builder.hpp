@@ -45,7 +45,7 @@ struct DatabaseHandler {
                          "', " + to_string(token.syllables) + ")";
     query += values;
     // makeValuesStr(token.word, token.phonemes, token.syllables);
-    Logger::info("makeing query: ", query);
+    Logger::info("making query: ", query);
   }
   //
   // template <typename... Args>
@@ -74,7 +74,7 @@ struct TokenMaker {
     const string &word = split_line[0];
     vector<std::string> phonemes;
     std::string phonemes_str;
-    for (unsigned int i = 0; i < split_line.size(); i++) {
+    for (unsigned int i = 1; i < split_line.size(); i++) {
       phonemes.push_back(split_line[i]);
       phonemes_str += split_line[i];
       if (i < split_line.size() - 1) {

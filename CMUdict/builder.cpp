@@ -26,7 +26,13 @@ vector<string> readLines() {
   vector<std::string> lines;
   while (getline(readStream, buffer)) {
     std::string line;
-    for (auto &character : buffer) {
+    unsigned int word_end = buffer.find_first_of(" ");
+    for (unsigned int i = 0; buffer[i]; i++) {
+      const char character = buffer[i];
+      if (i > word_end) {
+        if (character == '\'')
+          continue;
+      }
       if (character == '(' || character == ')' ||
           (character >= 48 && character <= 57))
         continue;
@@ -39,7 +45,7 @@ vector<string> readLines() {
 
 int main() {
   vector<Token> tokens;
-  Logger::setLogger("logger/logger.log", Logger::INFO, true);
+  Logger::setLogger("logger/logger.log", Logger::DEBUG, true);
   Connector connector;
   const vector<string> lines = readLines();
   for (auto &line : lines) {
@@ -47,7 +53,9 @@ int main() {
     if (split_line.empty() || split_line.size() < 2)
       continue;
     const Token &token = TokenMaker::makeToken(split_line);
-    DatabaseHandler::addTokenToDb(token);
+    tokens.push_back(token);
+    // DatabaseHandler::addTokenToDb(token);
+    // connector.makeQuery("SELECT * FROM dict");
   }
   Logger::debug(tokens);
   Logger::info("the end");
