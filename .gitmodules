@@ -1,3 +1,7 @@
-[submodule "./dictionnary/MyCppLib"]
-	path = ./dictionnary/MyCppLib
+[submodule "./CMUdict/MyCppLib"]
+	path = ./CMUdict/MyCppLib
+  url = git@github.com:helauren42/MyCppLib.git
+
+[submodule "./ipa_dict/MyCppLib"]
+	path = ./ipa_dict/MyCppLib
 	url = git@github.com:helauren42/MyCppLib.git
