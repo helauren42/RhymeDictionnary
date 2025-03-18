@@ -39,13 +39,15 @@ ostream &operator<<(ostream &lhs, const Token &token) {
 }
 
 struct DatabaseHandler {
-  static void addTokenToDb(const Token &token) {
+  static string buildQuery(const Token &token) {
     std::string query = "INSERT INTO dict(word, phonemes, syllables)";
+
     std::string values = "VALUES('" + token.word + "', '" + token.phonemes_str +
                          "', " + to_string(token.syllables) + ")";
     query += values;
     // makeValuesStr(token.word, token.phonemes, token.syllables);
     Logger::info("making query: ", query);
+    return query;
   }
   //
   // template <typename... Args>
@@ -71,7 +73,14 @@ struct TokenMaker {
     return false;
   }
   static Token makeToken(const vector<string> &split_line) {
-    const string &word = split_line[0];
+    const string &preword = split_line[0];
+    string word;
+    for (auto &character : preword) {
+      if (character == '\'') {
+        word += "\\'";
+      } else
+        word += character;
+    }
     vector<std::string> phonemes;
     std::string phonemes_str;
     for (unsigned int i = 1; i < split_line.size(); i++) {

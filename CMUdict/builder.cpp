@@ -45,7 +45,7 @@ vector<string> readLines() {
 
 int main() {
   vector<Token> tokens;
-  Logger::setLogger("logger/logger.log", Logger::DEBUG, true);
+  Logger::setLogger("logger/logger.log", Logger::INFO, true);
   Connector connector;
   const vector<string> lines = readLines();
   for (auto &line : lines) {
@@ -53,8 +53,9 @@ int main() {
     if (split_line.empty() || split_line.size() < 2)
       continue;
     const Token &token = TokenMaker::makeToken(split_line);
-    tokens.push_back(token);
-    // DatabaseHandler::addTokenToDb(token);
+    // tokens.push_back(token);
+    const string query = DatabaseHandler::buildQuery(token);
+    connector.makeQuery(query);
     // connector.makeQuery("SELECT * FROM dict");
   }
   Logger::debug(tokens);
