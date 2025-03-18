@@ -1,4 +1,4 @@
-#include "../MyCppLib/MyCppLib.hpp"
+#include "../MyCppLib/Logger/Logger.hpp"
 
 #include <array>
 #include <iostream>
@@ -9,15 +9,16 @@
 using namespace std;
 using namespace Printer;
 
-class Token {
-public:
+struct Token {
   const std::string word;
   const vector<string> phonemes;
+  const string phonemes_str;
   const unsigned int syllables;
 
   Token(const string &_word, const vector<string> &_phonemes,
-        const int &_syllables)
-      : word(_word), phonemes(_phonemes), syllables(_syllables) {};
+        const string &_phonemes_str, const int &_syllables)
+      : word(_word), phonemes(_phonemes), phonemes_str(_phonemes_str),
+        syllables(_syllables) {};
   const std::string stringify() const {
     std::string ret;
     ret += "\nword: " + word + "\n";
@@ -37,6 +38,27 @@ ostream &operator<<(ostream &lhs, const Token &token) {
   return lhs;
 }
 
+struct DatabaseHandler {
+  static void addTokenToDb(const Token &token) {
+    std::string query = "INSERT INTO dict(word, phonemes, syllables)";
+    std::string values = "VALUES('" + token.word + "', '" + token.phonemes_str +
+                         "', " + to_string(token.syllables) + ")";
+    query += values;
+    // makeValuesStr(token.word, token.phonemes, token.syllables);
+    Logger::info("makeing query: ", query);
+  }
+  //
+  // template <typename... Args>
+  // static std::string makeValuesStr(const Args &...args) {
+  //   stringstream ret("VALUES(");
+  //   while (sizeof...(args) > 0) {
+  //     cout << std::string(args...) << endl;
+  //     ret << std::string(args...);
+  //   }
+  //   return ret.str();
+  // }
+};
+
 struct TokenMaker {
   static constexpr array<const char *, 15> vowels = {
       "AA", "AE", "AH", "AO", "AW", "AY", "EH", "ER",
@@ -51,12 +73,18 @@ struct TokenMaker {
   static Token makeToken(const vector<string> &split_line) {
     const string &word = split_line[0];
     vector<std::string> phonemes;
-    for (int i = 0; i < split_line.size(); i++) {
+    std::string phonemes_str;
+    for (unsigned int i = 0; i < split_line.size(); i++) {
       phonemes.push_back(split_line[i]);
+      phonemes_str += split_line[i];
+      if (i < split_line.size() - 1) {
+        phonemes_str += " ";
+      }
     }
     const unsigned int &syllable_count = TokenMaker::countSyllables(phonemes);
-    return Token(word, phonemes, syllable_count);
+    return Token(word, phonemes, phonemes_str, syllable_count);
   }
+
   static unsigned int countSyllables(const vector<string> &phonemes) {
     unsigned int count = 0;
     for (auto &phoneme : phonemes) {

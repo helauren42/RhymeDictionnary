@@ -2,6 +2,9 @@
 #include <fstream>
 #include <string>
 
+#include "../MyCppLib/Logger/Logger.hpp"
+#include "connector.hpp"
+
 #define READFILE "files/cmudict-0.7b"
 
 unsigned int count_syllables(const vector<string> &phonemes) {
@@ -31,23 +34,22 @@ vector<string> readLines() {
     }
     lines.push_back(line);
   };
-  // for (auto line : lines) {
-  //   cout << line << endl;
-  // }
   return lines;
 }
 
 int main() {
   vector<Token> tokens;
+  Logger::setLogger("logger/logger.log", Logger::INFO, true);
+  Connector connector;
   const vector<string> lines = readLines();
   for (auto &line : lines) {
     auto split_line = split<vector>(line, WHITE_SPACES);
-    Printer::stdOut(split_line);
     if (split_line.empty() || split_line.size() < 2)
       continue;
     const Token &token = TokenMaker::makeToken(split_line);
-    tokens.push_back(token);
+    DatabaseHandler::addTokenToDb(token);
   }
-  Printer::stdOut(tokens);
+  Logger::debug(tokens);
+  Logger::info("the end");
   return 0;
 }

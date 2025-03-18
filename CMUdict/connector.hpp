@@ -5,9 +5,8 @@
 #include <mariadb/mysql.h>
 #include <vector>
 
-#include "../MyCppLib/MyCppLib.hpp"
+#include "../MyCppLib/Logger/Logger.hpp"
 #include "../PATHS.hpp"
-// #include "builder.hpp"
 
 class Connector {
 public:
@@ -18,12 +17,26 @@ public:
   Connector() : user(fetchUser()), pwd(fetchPwd()) {
     connectToDb();
     initTable();
-    Logger::winfo("Show tables:");
+    Logger::info("Show tables:");
     makeQuery("SHOW TABLES");
   }
   ~Connector() {}
-  // void addToken(const Token &token) {
-  // }
+  void makeQuery(const std::string &query) {
+    Logger::info("make query: \"", query, "\"");
+    if (mysql_query(conn, query.c_str())) {
+      Logger::error("Failed: ", mysql_error(conn));
+      return;
+    }
+    MYSQL_RES *result = mysql_use_result(conn);
+    if (!result) {
+      Logger::error("Could not retrieve result: ", mysql_error(conn));
+      return;
+    }
+    while ((row = mysql_fetch_row(result)) != NULL) {
+      Logger::info(row[0]);
+    }
+    mysql_free_result(result);
+  }
 
 private:
   void connectToDb() {
@@ -44,31 +57,15 @@ private:
     makeQuery(
         "CREATE TABLE IF NOT EXISTS dict(id INT AUTO_INCREMENT PRIMARY KEY, \
                 word varchar(255) NOT NULL, \
-                ipa TEXT NOT NULL, \
+                phonemes TEXT NOT NULL, \
                 syllables INT NOT NULL \
                 )");
-  }
-  void makeQuery(const std::string &query) {
-    Logger::info("make query: \"", query, "\"");
-    if (mysql_query(conn, query.c_str())) {
-      Logger::werror("Failed: ", mysql_error(conn));
-      return;
-    }
-    MYSQL_RES *result = mysql_use_result(conn);
-    if (!result) {
-      Logger::werror("Could not retrieve result: ", mysql_error(conn));
-      return;
-    }
-    while ((row = mysql_fetch_row(result)) != NULL) {
-      Logger::winfo(row[0]);
-    }
-    mysql_free_result(result);
   }
   std::string fetchUser() {
     std::string secrets = PROJECT_DIR + std::string("secrets/secrets.txt");
     std::ifstream data(secrets);
     if (!data) {
-      Logger::werror("Fetch user could not fetch data from: " + secrets);
+      Logger::error("Fetch user could not fetch data from: " + secrets);
       return nullptr;
     }
     std::string buffer;
@@ -77,15 +74,15 @@ private:
         return split<std::vector>(buffer, "=")[1];
       }
     }
-    Logger::werror("Fetch user could not fetch data from: " + secrets);
+    Logger::error("Fetch user could not fetch data from: " + secrets);
     return nullptr;
   }
 
   std::string fetchPwd() {
-    std::string secrets = PROJECT_DIR + std::string("/dictionnary/secrets.txt");
+    std::string secrets = PROJECT_DIR + std::string("secrets/secrets.txt");
     std::ifstream data(secrets);
     if (!data) {
-      Logger::werror("Fetch pwd could not fetch data from: " + secrets);
+      Logger::error("Fetch pwd could not fetch data from: " + secrets);
       exit(1);
     }
     std::string buffer;
@@ -94,7 +91,7 @@ private:
         return split<std::vector>(buffer, "=")[1];
       }
     }
-    Logger::werror("Fetch pwd could not fetch data from: " + secrets);
+    Logger::error("Fetch pwd could not fetch data from: " + secrets);
     return nullptr;
   }
 };
