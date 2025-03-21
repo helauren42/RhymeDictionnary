@@ -1,7 +1,5 @@
 #include "Build.hpp"
-#include "MyCppLib/Logger/Logger.hpp"
 #include "Connector.hpp"
-#include "MyCppLib/Printer/Printer.hpp"
 
 struct PATHS {
     static const std::string ProjectDir;

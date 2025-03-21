@@ -10,7 +10,6 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	c++ $(INCLUDE) $(SRCS) -g3 $(FLAGMARIADB) -o $(NAME)
-	clean
 
 %.o: %.cpp
 	c++ $(CFLAGS) $(INCLUDE) -g3 -c $< -o $@

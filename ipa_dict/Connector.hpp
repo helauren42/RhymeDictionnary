@@ -6,8 +6,7 @@
 #include <vector>
 
 #include "../PATHS.hpp"
-#include "MyCppLib/Logger/Logger.hpp"
-#include "MyCppLib/Strings/Strings.hpp"
+#include "../MyCppLib/MyCppLib.hpp"
 #include "Build.hpp"
 
 class Connector{
@@ -16,7 +15,7 @@ class Connector{
         MYSQL_ROW row;
         const std::string user;
         const std::string pwd;
-        void addToken(const Token& token){
+        void addToken(const Token& token) {
             std::wstring word = token.word;
             std::wstring pronunciation_split;
             for(size_t i = 0; i < token.rev_ipa_pronunciations.size(); i++) {
@@ -26,7 +25,6 @@ class Connector{
                 for(auto& phoneme: pronun) {
                     pronunciation_split += phoneme + L" ";
                 }
-                // !!! I AM HERE !!!
                 std::string insert_into("INSERT INTO rd(word, ipa, syllables)");
                 std::wstring beef = L"'" + word + L"', '" + pronunciation_split + L"', " + syllables_count.str() +  L")";
                 std::string beef_str(beef.cbegin(), beef.cend());
@@ -88,7 +86,7 @@ class Connector{
             }
             std::string buffer;
             while(getline(data, buffer)){
-                if(buffer.find("DB_USER") != std::string::npos) {
+                if(buffer.find("DB_USER") != std::string::npos){
                     return split<std::vector>(buffer, "=")[1];
                 }
             }
