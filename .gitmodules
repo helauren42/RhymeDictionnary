@@ -1,4 +1,4 @@
 [submodule "MyCppLib"]
-	path = ./MyCppLib
-  url = git@github.com:helauren42/MyCppLib.git
+	path = MyCppLib
+	url = git@github.com:helauren42/MyCppLib.git
 
