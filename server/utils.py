@@ -1,7 +1,14 @@
-import socket
+from typing import Optional
+from const import PROJECT_DIR
 
-def getPort():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(("", 0))
-    addr = s.getsockname()
-    return addr[1]
+PATH = PROJECT_DIR + "secrets/secrets.txt"
+
+def fetchAccountInfo(find: str) -> Optional[str]:
+    with open(PATH, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            split_line = line.strip().split("=")
+            if split_line[0] == find:
+                return split_line[1]
+    return None
+
