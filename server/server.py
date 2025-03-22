@@ -22,15 +22,15 @@ app.mount("/static", staticfiles.StaticFiles(directory="../static"), name="stati
 
 VALID_WORDS: dict[int, list[str]] = fetchValidWords()
 
+with open(os.path.join(PROJECT_DIR, "server/logging/server.log"), "w") as file:
+    file.write("")
+
 logging.basicConfig(
     level=logging.DEBUG,
     handlers=[logging.FileHandler(os.path.join(PROJECT_DIR, "server/logging/server.log"), mode='a')],
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%H:%M:%S",
 )
-
-with open(os.path.join(PROJECT_DIR, "server/logging/server.log"), "w") as file:
-    file.write("")
 
 logging.debug("This is a debug message")
 logging.info("This is an info message")
@@ -65,22 +65,22 @@ class Word():
 
 class AbstractRhymeFinder(ABC):
     def __init__(self):
-        self.keyDict: dict[str:str] = {}  # key: words to find value: vowels
-        self.rhymeDict: dict[str:Word] = {} # key: vowels+words value: word object with rhymes consonants etc
-        self.rhymes: dict[str:str] = {} # the chosen rhymes key: word, value: phonemes
+        self.keyDict: dict[str:int] = {}  # key: words value: pos
+        self.rhymeDict: list[Word] = [] # word object with rhymes consonants etc
         self.buildDictionnaries()
 
     def buildDictionnaries(self):
-        cursor.execute('''SELECT word, vowels, phonemes, consonants FROM dict''')
+        cursor.execute('''SELECT word, vowels, phonemes, consonants FROM dict ORDER BY vowels, phonemes''')
         rows = cursor.fetchall()
+        pos: int = 0
         for row in rows:
-            self.keyDict[row[0]] = row[1]
-            key_rhyme_dict = row[1] + " | " + row[0]
+            self.keyDict[row[0]] = pos
             phonemes = row[2]
             consonants = row[3]
-            self.rhymeDict[key_rhyme_dict] = Word(row[0], phonemes, row[1], consonants)
+            self.rhymeDict.append(Word(row[0], phonemes, row[1], consonants))
+            pos += 1
+        # logging.info(self.keyDict)
         logging.info(self.rhymeDict)
-        # !!! I'm here !!! create self.rhymes !
 
     def getRhymeDictKey(self, word:str):
         vowels = self.keyDict[word]
@@ -104,7 +104,7 @@ async def buildSearchResultsPage(word:str):
     phonemes = cursor.fetchall()
     print(phonemes)
     logging.info("search word found phonemes: ", phonemes)
-    
+
 ''' ------------------------------------------------------  ENDPOINTS  ------------------------------------------------------ '''
 
 @app.get("/")
