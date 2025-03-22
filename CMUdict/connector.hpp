@@ -57,7 +57,9 @@ private:
     makeQuery(
         "CREATE TABLE IF NOT EXISTS dict(id INT AUTO_INCREMENT PRIMARY KEY, \
                 word varchar(255) NOT NULL, \
-                phonemes TEXT NOT NULL, \
+                phonemes varchar(255) NOT NULL, \
+                vowels varchar(255) NOT NULL, \
+                consonants varchar(255) NOT NULL, \
                 syllables INT NOT NULL \
                 )");
   }

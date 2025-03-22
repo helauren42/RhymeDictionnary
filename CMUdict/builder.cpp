@@ -54,7 +54,7 @@ int main() {
       continue;
     const Token &token = TokenMaker::makeToken(split_line);
     // tokens.push_back(token);
-    const string query = DatabaseHandler::buildQuery(token);
+    const string query = DatabaseHandler::insertTokenQuery(token);
     connector.makeQuery(query);
     // connector.makeQuery("SELECT * FROM dict");
   }

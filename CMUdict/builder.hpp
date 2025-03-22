@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "../MyCppLib/Strings/Strings.hpp"
+
 using namespace std;
 using namespace Printer;
 
@@ -13,11 +15,13 @@ struct Token {
   const std::string word;
   const vector<string> phonemes;
   const string phonemes_str;
+  const string vowel_str;
+  const string consonant_str;
   const unsigned int syllables;
 
   Token(const string &_word, const vector<string> &_phonemes,
-        const string &_phonemes_str, const int &_syllables)
-      : word(_word), phonemes(_phonemes), phonemes_str(_phonemes_str),
+        const string &_phonemes_str, const string& _vowel_str, const string& _consonant_str, const int &_syllables)
+      : word(_word), phonemes(_phonemes), phonemes_str(_phonemes_str), vowel_str(_vowel_str), consonant_str(_consonant_str),
         syllables(_syllables) {};
   const std::string stringify() const {
     std::string ret;
@@ -37,29 +41,6 @@ ostream &operator<<(ostream &lhs, const Token &token) {
   lhs << token.stringify();
   return lhs;
 }
-
-struct DatabaseHandler {
-  static string buildQuery(const Token &token) {
-    std::string query = "INSERT INTO dict(word, phonemes, syllables)";
-
-    std::string values = "VALUES('" + token.word + "', '" + token.phonemes_str +
-                         "', " + to_string(token.syllables) + ")";
-    query += values;
-    // makeValuesStr(token.word, token.phonemes, token.syllables);
-    Logger::info("making query: ", query);
-    return query;
-  }
-  //
-  // template <typename... Args>
-  // static std::string makeValuesStr(const Args &...args) {
-  //   stringstream ret("VALUES(");
-  //   while (sizeof...(args) > 0) {
-  //     cout << std::string(args...) << endl;
-  //     ret << std::string(args...);
-  //   }
-  //   return ret.str();
-  // }
-};
 
 struct TokenMaker {
   static constexpr array<const char *, 15> vowels = {
@@ -83,15 +64,31 @@ struct TokenMaker {
     }
     vector<std::string> phonemes;
     std::string phonemes_str;
-    for (unsigned int i = 1; i < split_line.size(); i++) {
-      phonemes.push_back(split_line[i]);
-      phonemes_str += split_line[i];
-      if (i < split_line.size() - 1) {
-        phonemes_str += " ";
+    std::string vowel_str;
+    std::string consonant_str;
+    unsigned int i = 1;
+    while(i < split_line.size()) {
+      if(isVowel(split_line[i])) {
+        phonemes.push_back(split_line[i]);
+        phonemes_str = split_line[i] + " " + phonemes_str;
+        vowel_str = split_line[i] + " " + vowel_str;
+        i++;
+      }
+      else {
+        std::string consonant = "";
+        while(i < split_line.size() && !isVowel(split_line[i])) {
+          consonant += split_line[i];
+          i++;
+        }
+        phonemes_str = consonant + " " + phonemes_str;
+        consonant_str = consonant + " " + consonant_str;
       }
     }
+    vowel_str = rstrip(vowel_str);
+    consonant_str = rstrip(consonant_str);
+    phonemes_str = rstrip(phonemes_str);
     const unsigned int &syllable_count = TokenMaker::countSyllables(phonemes);
-    return Token(word, phonemes, phonemes_str, syllable_count);
+    return Token(word, phonemes, phonemes_str, vowel_str, consonant_str, syllable_count);
   }
 
   static unsigned int countSyllables(const vector<string> &phonemes) {
@@ -102,5 +99,17 @@ struct TokenMaker {
       }
     }
     return count;
+  }
+};
+
+struct DatabaseHandler {
+  static string insertTokenQuery(const Token &token) {
+    std::string query = "INSERT INTO dict(word, phonemes, vowels, consonants, syllables)";
+
+    std::string values = "VALUES('" + token.word + "', '" + token.phonemes_str +
+                         "', '" + token.vowel_str + "', '" + token.consonant_str + "', " + to_string(token.syllables) + ")";
+    query += values;
+    Logger::info("making query: ", query);
+    return query;
   }
 };
