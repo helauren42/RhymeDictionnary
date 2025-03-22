@@ -21,4 +21,3 @@ def fetchValidWords():
     return validWords
 
 fetchValidWords()
-
