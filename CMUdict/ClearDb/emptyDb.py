@@ -21,7 +21,8 @@ try:
 
     with connection.cursor() as cursor:
         cursor.execute("USE rd")
-        cursor.execute("DROP table dict")
+        cursor.execute("DROP table bigDict")
+        cursor.execute("DROP table smallDict")
         cursor.close()
 except Exception as e:
     print(e)

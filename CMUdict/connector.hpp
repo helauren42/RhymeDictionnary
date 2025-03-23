@@ -55,13 +55,20 @@ private:
   }
   void initTable() {
     makeQuery(
-        "CREATE TABLE IF NOT EXISTS dict(id INT AUTO_INCREMENT PRIMARY KEY, \
+        "CREATE TABLE IF NOT EXISTS bigDict(id INT AUTO_INCREMENT PRIMARY KEY, \
                 word varchar(255) NOT NULL, \
                 phonemes varchar(255) NOT NULL, \
                 vowels varchar(255) NOT NULL, \
                 consonants varchar(255) NOT NULL, \
                 syllables INT NOT NULL \
                 )");
+    makeQuery("CREATE TABLE IF NOT EXISTS smallDict(id INT AUTO_INCREMENT PRIMARY KEY, \
+            word varchar(255) NOT NULL, \
+            phonemes varchar(255) NOT NULL, \
+            vowels varchar(255) NOT NULL, \
+            consonants varchar(255) NOT NULL, \
+            syllables INT NOT NULL \
+            )");
   }
   std::string fetchUser() {
     std::string secrets = PROJECT_DIR + std::string("secrets/secrets.txt");

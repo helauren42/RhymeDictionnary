@@ -44,6 +44,7 @@ vector<string> readLines() {
 }
 
 int main() {
+  std::vector<string> valid10k = DatabaseHandler::makeValid10k();
   vector<Token> tokens;
   Logger::setLogger("logger/logger.log", Logger::INFO, true);
   Connector connector;
@@ -53,12 +54,13 @@ int main() {
     if (split_line.empty() || split_line.size() < 2)
       continue;
     const Token &token = TokenMaker::makeToken(split_line);
-    // tokens.push_back(token);
-    const string query = DatabaseHandler::insertTokenQuery(token);
+    string query = DatabaseHandler::insertToBigDictQuery(token);
     connector.makeQuery(query);
-    // connector.makeQuery("SELECT * FROM dict");
+    query = DatabaseHandler::insertToSmallDictQuery(token, valid10k);
+    if(query.size() > 0)
+        connector.makeQuery(query);
   }
-  Logger::debug(tokens);
+  // Logger::debug(tokens);
   Logger::info("the end");
   return 0;
 }
