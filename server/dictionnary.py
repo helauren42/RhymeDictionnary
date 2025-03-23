@@ -1,41 +1,7 @@
-from fastapi import FastAPI, Response, responses, staticfiles
-import uvicorn
 import logging
-import sys
-import os
-from typing import Optional
-import mariadb
 from abc import ABC
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 from db import cursor
-from const import HOST, PORT, PROJECT_DIR
-from getValidWords import fetchValidWords
-from htmlResponse import HtmlResponse
-
-''' ------------------------------------------------------ PRECONFIG ------------------------------------------------------ '''
-
-app = FastAPI()
-
-app.mount("/static", staticfiles.StaticFiles(directory="../static"), name="static")
-
-VALID_WORDS = fetchValidWords()
-
-with open(os.path.join(PROJECT_DIR, "server/logging/server.log"), "w") as file:
-    file.write("")
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    handlers=[logging.FileHandler(os.path.join(PROJECT_DIR, "server/logging/server.log"), mode='a')],
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%H:%M:%S",
-)
-
-logging.debug("This is a debug message")
-logging.info("This is an info message")
-
-''' Cached Dictionnaries '''
+from typing import Optional
 
 class Word():
     def __init__(self, _word:str, _phonemes:str, _vowels:str, _consonants:str):
@@ -120,29 +86,3 @@ class RhymeFinder(AbstractRhymeFinder):
             rhymes = await  self.orderRhymesList(rhymes, wordObj, pos)
         logging.info(rhymes)
         return rhymes
-
-rhyme_finder = RhymeFinder()
-
-''' ------------------------------------------------------  ENDPOINTS ------------------------------------------------------ '''
-
-@app.get("/")
-async def home():
-    index_path = os.path.join(PROJECT_DIR, "static/html/index.html")
-    with open(index_path, "r") as file:
-        content = file.read()
-    return responses.HTMLResponse(content=content)
-
-@app.get("/search/{word}")
-async def search(word:str):
-    word = word.upper()
-    logging.info(f"received string: {word}")
-    if word not in VALID_WORDS:
-        return Response(content="Error: word not found in database", status_code=400)
-    search_path = PROJECT_DIR + "static/html/search.html"
-    resp = await rhyme_finder.findRhymes(word)
-    html_content = "<ul>" + "".join([f"<li>{rhyme.word}</li>" for rhyme in resp]) + "</ul>"
-    return responses.HTMLResponse(content=html_content)
-
-if __name__ == "__main__":
-    print(f"host: {HOST}, port: {PORT}")
-    uvicorn.run(app="server:app", host=HOST, port=PORT, reload=True)
