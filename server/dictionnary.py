@@ -49,24 +49,21 @@ class AbstractRhymeFinder(ABC):
     async def orderRhymesList(self, rhymes: list[Word], wordObj:Word, pos:int):
         posmin = pos -1
         posmax = pos +1
-        maxpos = len(rhymes) -1
-        refined: list[Word] = []
+        minList = rhymes[0:posmin+1]
+        maxList = rhymes[:posmax-1:-1]
         matchPhonemes = (wordObj.phonemes[0], wordObj.phonemes[1])
-        while posmin > 0 and (rhymes[posmin].phonemes[0], rhymes[posmin].phonemes[1]) == matchPhonemes:
-            refined.append(rhymes[posmin])
-            posmin -= 1
-        while posmax < maxpos and (rhymes[posmax].phonemes[0], rhymes[posmax].phonemes[1]) == matchPhonemes:
-            refined.append(rhymes[posmax])
-            posmax += 1
-        while True:
-            if posmin < 0 and posmax > maxpos:
-                break
-            if posmin >= 0:
-                refined.append(rhymes[posmin])
-                posmin -= 1
-            if posmax <= maxpos:
-                refined.append(rhymes[posmax])
-                posmax += 1
+        matchConsonant = wordObj.consonants[0]
+        refined: list[Word] = []
+        # c++ remove phonemes if size < 2
+        while (minList[-1].phonemes[0], minList[-1].phonemes[1]) == matchPhonemes:
+            refined.append(minList.pop())
+        while (maxList[-1].phonemes[0], maxList[-1].phonemes[1]) == matchPhonemes:
+            refined.append(maxList.pop())
+        while len(minList) != 0 and len(maxList) != 0:
+            if len(minList) != 0:
+                refined.append(minList.pop())
+            if len(maxList) != 0:
+                refined.append(maxList.pop())
         logging.info("!!! RHYMES REFINED !!!")
         logging.info(f"len: {len(refined)}")
         return refined
@@ -75,6 +72,7 @@ class RhymeFinder(AbstractRhymeFinder):
     def __init__(self):
         super().__init__()
 
+    # might be done in js on the frontend
     async def findPhonemes(self, word:str, phonemes: Optional[list[str]]=None):
         pass
 
