@@ -72,10 +72,6 @@ class RhymeFinder(AbstractRhymeFinder):
     def __init__(self):
         super().__init__()
 
-    # might be done in js on the frontend
-    async def findPhonemes(self, word:str, phonemes: Optional[list[str]]=None):
-        pass
-
     async def findRhymes(self, word:str, phonemes: Optional[list[str]]=None):
         pos = self.keyDict[word]
         wordObj = self.rhymeDict[pos]

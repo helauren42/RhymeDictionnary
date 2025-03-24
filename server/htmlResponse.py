@@ -21,7 +21,7 @@ class HtmlResponse():
         phoneme_index = 0
         phoneme_buttons = ""
         for phoneme in wordObj.phonemes:
-            phoneme_buttons = f''' <button class="phoneme-btn{phoneme_index}" onclick="handlePhonemeClick({wordObj.word}, '{phoneme}', '{phoneme_index}')">{phoneme}</button> ''' + phoneme_buttons
+            phoneme_buttons = f''' <button class="phoneme-btn{phoneme_index}" onclick="handlePhonemeClick('{wordObj.word}', '{phoneme}', '{phoneme_index}')">{phoneme}</button> ''' + phoneme_buttons
             phoneme_index += 1
         return phoneme_buttons
 
