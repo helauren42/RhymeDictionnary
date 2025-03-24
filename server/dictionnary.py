@@ -84,5 +84,4 @@ class RhymeFinder(AbstractRhymeFinder):
         rhymes, pos = await self.getBasicRhymes(word, pos)
         if len(wordObj.phonemes) >= 2:
             rhymes = await  self.orderRhymesList(rhymes, wordObj, pos)
-        logging.info(rhymes)
-        return rhymes
+        return rhymes, wordObj
