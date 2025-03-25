@@ -1,4 +1,9 @@
-fastapi
-uvicorn
 pronouncing
 pydantic
+
+fastapi
+uvicorn
+mariadb
+pyright
+python-lsp-server
+pymysql

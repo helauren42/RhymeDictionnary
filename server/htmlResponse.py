@@ -15,19 +15,19 @@ class HtmlResponse():
             <link rel="stylesheet" href="../static/css/index.css">
             <script src="../static/js/index.js"></script>
         </head>'''
-
+    
     @staticmethod
     async def getPhonemeButtons(wordObj: Word):
         phoneme_index = 0
         phoneme_buttons = ""
         for phoneme in wordObj.phonemes:
-            phoneme_buttons = f''' <button class="phoneme-btn{phoneme_index}" onclick="handlePhonemeClick('{wordObj.word}', '{phoneme}', '{phoneme_index}')">{phoneme}</button> ''' + phoneme_buttons
+            phoneme_buttons = f''' <button class="phoneme-btn" id="phoneme-btn{phoneme_index}" onclick="handlePhonemeClick('{wordObj.word}', '{phoneme}', {wordObj.phonemes}, '{phoneme_index}')">{phoneme}</button> ''' + phoneme_buttons
             phoneme_index += 1
         return phoneme_buttons
 
     @staticmethod
     async def getRhymeList(rhymes: list[Word]) -> str:
-        content = f'''<ul>'''
+        content = f'''<ul id="rhymes_list">'''
         logging.info(f"RHYMES:\n{rhymes}")
         for rhyme in rhymes:
             phonemes_str = ""
@@ -41,11 +41,7 @@ class HtmlResponse():
     @staticmethod
     async def buildSearchResultsPage(wordObj: Word, rhymes: list[Word]) -> str:
         html_content = await HtmlResponse.getHead()
-        html_content += f'''
-        <body>
-            <h1>{wordObj.word}</h1>
-            <div id="searched-word-phonemes">
-        '''
+        html_content += f'''<body><h1 id="searched_word_baby">{wordObj.word}</h1><div id="searched-word-phonemes">'''
         phoneme_buttons = await HtmlResponse.getPhonemeButtons(wordObj)
         html_content += phoneme_buttons + ''' </div>'''
 

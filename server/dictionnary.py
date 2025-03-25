@@ -2,6 +2,7 @@ import logging
 from abc import ABC
 from db import cursor
 from typing import Optional
+import json
 
 class Word():
     def __init__(self, _word:str, _phonemes:str, _vowels:str, _consonants:str):
@@ -11,11 +12,18 @@ class Word():
         self.consonants: list[str] = _consonants.split()
     def __repr__(self):
         return f"Word(word='{self.word}', phonemes='{self.phonemes}', vowels='{self.vowels}', consonants='{self.consonants}')"
+    def content(self) -> str:
+        return json.dumps({
+            "word": self.word,
+            "phonemes": self.phonemes,
+            "vowels": self.vowels,
+            "consonants": self.consonants
+        })
 
 class AbstractRhymeFinder(ABC):
     def __init__(self):
-        self.keyDict: dict[str,int] = {}  # key: words value: pos
-        self.rhymeDict: list[Word] = [] # word object with rhymes consonants etc
+        self.keyDict: dict[str,int] = {}  # key: words, value: pos in rhymeDict
+        self.rhymeDict: list[Word] = []
         self.buildDictionnaries()
         self.maxPos:int = len(self.rhymeDict)-1
 
@@ -32,8 +40,6 @@ class AbstractRhymeFinder(ABC):
 
     async def rhymeDictPos(self, word:str) -> int:
         pos = self.keyDict[word]
-        logging.info("still here")
-        logging.info(f"pos: {pos}")
         return pos
 
     async def getBasicRhymes(self, word:str, pos: int):
@@ -44,6 +50,8 @@ class AbstractRhymeFinder(ABC):
             posmin -= 1
         while posmax < self.maxPos and self.rhymeDict[posmax+1].vowels[0] == end_vowel:
             posmax += 1
+        logging.info(f"posmin: {posmin}")
+        logging.info(f"posmax: {posmax}")
         return (self.rhymeDict[posmin:posmax], pos - posmin)
 
     async def orderRhymesList(self, rhymes: list[Word], wordObj:Word, pos:int):
@@ -59,12 +67,11 @@ class AbstractRhymeFinder(ABC):
             refined.append(minList.pop())
         while (maxList[-1].phonemes[0], maxList[-1].phonemes[1]) == matchPhonemes:
             refined.append(maxList.pop())
-        while len(minList) != 0 and len(maxList) != 0:
+        while len(minList) != 0 or len(maxList) != 0:
             if len(minList) != 0:
                 refined.append(minList.pop())
             if len(maxList) != 0:
                 refined.append(maxList.pop())
-        logging.info("!!! RHYMES REFINED !!!")
         logging.info(f"len: {len(refined)}")
         return refined
 
@@ -72,10 +79,18 @@ class RhymeFinder(AbstractRhymeFinder):
     def __init__(self):
         super().__init__()
 
-    async def findRhymes(self, word:str, phonemes: Optional[list[str]]=None):
+    async def findRhymesWord(self, word:str):
         pos = self.keyDict[word]
         wordObj = self.rhymeDict[pos]
         rhymes, pos = await self.getBasicRhymes(word, pos)
         if len(wordObj.phonemes) >= 2:
             rhymes = await  self.orderRhymesList(rhymes, wordObj, pos)
         return rhymes, wordObj
+
+    async def findRhymes(self, word:str):
+        pos = self.keyDict[word]
+        wordObj = self.rhymeDict[pos]
+        rhymes, pos = await self.getBasicRhymes(word, pos)
+        if len(wordObj.phonemes) >= 2:
+            rhymes = await  self.orderRhymesList(rhymes, wordObj, pos)
+        return rhymes

@@ -1,0 +1,28 @@
+#home_search_block {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+}
+
+#search_input {
+    display: inline-block;
+    /* width: 50%; */
+    margin-left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#search_button {
+    display: block;
+    margin-left: 50%;
+    margin-top: 1%;
+    transform: translate(-50%, -50%);
+}
+
+#home_title {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

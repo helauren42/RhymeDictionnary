@@ -1,8 +1,10 @@
 #include "builder.hpp"
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include "../MyCppLib/Logger/Logger.hpp"
+#include "../MyCppLib/Strings/Strings.hpp"
 #include "connector.hpp"
 
 #define READFILE "files/cmudict-0.7b"
@@ -50,7 +52,7 @@ int main() {
   Connector connector;
   const vector<string> lines = readLines();
   for (auto &line : lines) {
-    auto split_line = split<vector>(line, WHITE_SPACES);
+        auto split_line = split<std::vector>(line, WHITE_SPACES);
     if (split_line.empty() || split_line.size() < 2)
       continue;
     const Token &token = TokenMaker::makeToken(split_line);
@@ -60,7 +62,7 @@ int main() {
     if(query.size() > 0)
         connector.makeQuery(query);
   }
-  // Logger::debug(tokens);
+
   Logger::info("the end");
   return 0;
 }

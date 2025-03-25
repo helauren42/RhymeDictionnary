@@ -8,5 +8,3 @@ def fetchValidWords():
     with open(PATH, "r") as file:
         words = file.read().split()
         return words
-
-fetchValidWords()

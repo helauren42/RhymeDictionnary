@@ -54,8 +54,23 @@ li {
     font-size: 0.9em;
 }
 
+.active-btn {
+    background-color: rgb(40, 40, 40);
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
 .phoneme-btn {
-    background-color: #4caf50; /* Green background */
+    background-color: gray;
     border: none;
     color: white;
     padding: 5px 10px;
@@ -70,9 +85,9 @@ li {
 }
 
 .phoneme-btn:hover {
-    background-color: #45a049;
+    background-color: rgb(80, 80, 80);
 }
 
 .phoneme-btn:active {
-    background-color: #3d8b40;
+    background-color: rgb(40, 40, 40);
 }
