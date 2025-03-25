@@ -9,6 +9,7 @@ import mariadb
 from abc import ABC
 import time
 import asyncio
+import json
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -35,23 +36,25 @@ class Cached():
             if now - cached_time > 5:
                 Cached.rhymes.pop(word)
     @staticmethod
-    async def objectToString(rhymes_list: list[Word]) -> list[str]:
-        ret: list[str] = []
-        logging.info(f"!!!: {rhymes_list}")        
+    async def dictifyWord(rhymes_list: list[Word]) -> list[dict]:
+        ret: list[dict[list]] = []
         for wordObj in rhymes_list:
-            logging.info(f"!!!: {wordObj}")
-            ret.append(wordObj.content())
-            logging.info(f"!!!THEOTHERSIDE!!!")
+            logging.info(f"!!! step1: {wordObj}")
+            ret.append(wordObj.toDict())
+            logging.info(f"!!! step2: {wordObj.toDict()}")
+        logging.info(f"!!!SHOULD BE list of dict of list of ...: {ret}")        
         return ret
     @staticmethod
-    async def getRhymesList(word: str) -> list[str]:
+    async def getRhymesList(word: str) -> list[dict]:
         try:
+            logging.info(f"found cached rhymes list")
             rhyme_list = Cached.rhymes[word]
-            return await Cached.objectToString(rhyme_list)
+            return await Cached.dictifyWord(rhyme_list)
         except:
+            logging.info(f"rhymes list wss not cached")
             logging.info(f"!!!word: {word}")
             rhyme_list = await rhyme_finder.findRhymes(word)
-            return await Cached.objectToString(rhyme_list)
+            return await Cached.dictifyWord(rhyme_list)
 
 ''' ------------------------------------------------------ PRECONFIG ------------------------------------------------------ '''
 
@@ -90,7 +93,9 @@ async def home():
 
 @app.get("/getrhymeslist/{word}")
 async def getRhymesList(word:str):
-    return await Cached.getRhymesList(word)
+    ret = await Cached.getRhymesList(word)
+    logging.info(f"!!!!! ret: {ret}")
+    return ret
 
 @app.get("/search/{word}")
 async def search(word:str):

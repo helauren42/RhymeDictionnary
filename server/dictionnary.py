@@ -12,13 +12,13 @@ class Word():
         self.consonants: list[str] = _consonants.split()
     def __repr__(self):
         return f"Word(word='{self.word}', phonemes='{self.phonemes}', vowels='{self.vowels}', consonants='{self.consonants}')"
-    def content(self) -> str:
-        return json.dumps({
+    def toDict(self) -> dict:
+        return {
             "word": self.word,
             "phonemes": self.phonemes,
             "vowels": self.vowels,
             "consonants": self.consonants
-        })
+        }
 
 class AbstractRhymeFinder(ABC):
     def __init__(self):
@@ -42,7 +42,7 @@ class AbstractRhymeFinder(ABC):
         pos = self.keyDict[word]
         return pos
 
-    async def getBasicRhymes(self, word:str, pos: int):
+    async def getBasicRhymes(self, word:str, pos: int) -> list[Word]:
         posmin = pos -1
         posmax = pos +1
         end_vowel = self.rhymeDict[posmin].vowels[0]
@@ -54,7 +54,7 @@ class AbstractRhymeFinder(ABC):
         logging.info(f"posmax: {posmax}")
         return (self.rhymeDict[posmin:posmax], pos - posmin)
 
-    async def orderRhymesList(self, rhymes: list[Word], wordObj:Word, pos:int):
+    async def orderRhymesList(self, rhymes: list[Word], wordObj:Word, pos:int) -> list[Word]:
         posmin = pos -1
         posmax = pos +1
         minList = rhymes[0:posmin+1]
