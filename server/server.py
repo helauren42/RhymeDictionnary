@@ -39,11 +39,12 @@ class Cached():
     async def dictifyWord(rhymes_list: list[Word]) -> list[dict]:
         ret: list[dict[list]] = []
         for wordObj in rhymes_list:
-            logging.info(f"!!! step1: {wordObj}")
-            ret.append(wordObj.toDict())
-            logging.info(f"!!! step2: {wordObj.toDict()}")
-        logging.info(f"!!!SHOULD BE list of dict of list of ...: {ret}")        
+            ret.append(await wordObj.toDict())
         return ret
+    @staticmethod
+    async def getWord(word: str) -> list[dict]:
+        wordObj = await rhyme_finder.findWord(word)
+        return await wordObj.toDict()
     @staticmethod
     async def getRhymesList(word: str) -> list[dict]:
         try:
@@ -91,10 +92,14 @@ async def home():
         content = file.read()
     return responses.HTMLResponse(content=content)
 
+@app.get("/getword/{word}")
+async def getWord(word:str):
+    ret = await Cached.getWord(word)
+    return ret
+
 @app.get("/getrhymeslist/{word}")
 async def getRhymesList(word:str):
     ret = await Cached.getRhymesList(word)
-    logging.info(f"!!!!! ret: {ret}")
     return ret
 
 @app.get("/search/{word}")

@@ -12,7 +12,7 @@ class Word():
         self.consonants: list[str] = _consonants.split()
     def __repr__(self):
         return f"Word(word='{self.word}', phonemes='{self.phonemes}', vowels='{self.vowels}', consonants='{self.consonants}')"
-    def toDict(self) -> dict:
+    async def toDict(self) -> dict:
         return {
             "word": self.word,
             "phonemes": self.phonemes,
@@ -79,6 +79,10 @@ class RhymeFinder(AbstractRhymeFinder):
     def __init__(self):
         super().__init__()
 
+    async def findWord(self, word:str) -> Word:
+        pos = self.rhymeDictPos(word)
+        return self.rhymeDict[pos]
+    
     async def findRhymesWord(self, word:str):
         pos = self.keyDict[word]
         wordObj = self.rhymeDict[pos]

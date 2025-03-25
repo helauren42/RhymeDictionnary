@@ -4,19 +4,37 @@ let clicked_phoneme_indexes = [];
 let g_list_of_rhymes = []
 
 class Word {
-  constructor() {
-    let word = "";
-    let phonemes = [];
-    let vowels = [];
-    let consonants = [];
-    let particles = [];
+  constructor(_word, _phone, _vw, _conso){
+    let word = _word;
+    let phonemes = _phone;
+    let vowels = _vw;
+    let consonants =_conso;
+    let particles = this.makeParticles();
   }
-  makeParticles() {}
+  isVowel(phoneme){
+    if(this.vowels.includes(phoneme))
+      return true;
+    return false;
+  }
+  makeParticles(){
+    let pos = 0;
+    let previousIsVowel = true;
+    let ret = []
+    for(let phoneme of this.phonemes){
+      if(isVowel(phoneme) && (pos == 0 || previousIsVowel)){
+        particles.push("");
+        particles.push(phoneme);
+      }
+    }
+    return ret;
+  }
 }
 
 class PhonemeSearch {
   constructor() {
     let rhymes_list = [];
+  }
+  parseRhymesList(data){
   }
   handlePhonemeClick(word, phoneme, phonemes, phoneme_index) {
     // phoneme_index 0 is the last phoneme of the word
@@ -61,22 +79,27 @@ function handleInput() {
     .catch(console.error);
 }
 
+function requestFetchRhymes(){
+  const searched_word_baby = document.getElementById("searched_word_baby");
+  let url = HOST + window.location.port + "/getrhymeslist/" + searched_word_baby.outerText;
+
+  fetch(url)
+  .then(response => response.json())
+  .then(data => {
+    resp = data;
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
 function main() {
   const search_button = document.getElementById("search_button");
   const search_input = document.getElementById("search_input");
   const has_rhymes_list = document.getElementById("rhymes_list");
   if(has_rhymes_list){
-    const searched_word_baby = document.getElementById("searched_word_baby");
-    let url = HOST + window.location.port + "/getrhymeslist/" + searched_word_baby.outerText;
-    data = ""
-    fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      resp = data;
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+    data = requestFetchRhymes();
+    phoneme_search.parseRhymesList(data);
   }
   search_input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") handleInput();
