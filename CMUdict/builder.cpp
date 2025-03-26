@@ -52,17 +52,23 @@ int main() {
   Connector connector;
   const vector<string> lines = readLines();
   for (auto &line : lines) {
-        auto split_line = split<std::vector>(line, WHITE_SPACES);
+    Logger::fatal("1: ", line);
+    auto split_line = split<std::vector>(line, WHITE_SPACES);
+    Logger::fatal("2 split line size: ", split_line.size());
     if (split_line.empty() || split_line.size() < 2)
       continue;
+    Logger::fatal("2.2");
     const Token &token = TokenMaker::makeToken(split_line);
+    Logger::fatal("3: ", token.phonemes.size());
+    if (token.phonemes.size() < 2)
+      continue;
     string query = DatabaseHandler::insertToBigDictQuery(token);
     connector.makeQuery(query);
     query = DatabaseHandler::insertToSmallDictQuery(token, valid10k);
-    if(query.size() > 0)
-        connector.makeQuery(query);
+    if (query.size() > 0)
+      connector.makeQuery(query);
+    Logger::fatal("4");
   }
-
   Logger::info("the end");
   return 0;
 }

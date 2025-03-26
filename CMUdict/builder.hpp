@@ -1,9 +1,6 @@
-#include "../MyCppLib/Logger/Logger.hpp"
-
 #include <algorithm>
 #include <array>
 #include <cctype>
-#include <exception>
 #include <fstream>
 #include <iostream>
 #include <ostream>
@@ -15,7 +12,6 @@
 #define VALID_10K_FILE "./files/google-10000-english.txt"
 
 using namespace std;
-using namespace Printer;
 
 struct Token {
   const std::string word;
@@ -26,8 +22,10 @@ struct Token {
   const unsigned int syllables;
 
   Token(const string &_word, const vector<string> &_phonemes,
-        const string &_phonemes_str, const string& _vowel_str, const string& _consonant_str, const int &_syllables)
-      : word(_word), phonemes(_phonemes), phonemes_str(_phonemes_str), vowel_str(_vowel_str), consonant_str(_consonant_str),
+        const string &_phonemes_str, const string &_vowel_str,
+        const string &_consonant_str, const int &_syllables)
+      : word(_word), phonemes(_phonemes), phonemes_str(_phonemes_str),
+        vowel_str(_vowel_str), consonant_str(_consonant_str),
         syllables(_syllables) {};
   const std::string stringify() const {
     std::string ret;
@@ -73,28 +71,26 @@ struct TokenMaker {
     std::string vowel_str;
     std::string consonant_str;
     unsigned int i = 1;
-    while(i < split_line.size()) {
-      if(isVowel(split_line[i])) {
+
+    while (i < split_line.size()) {
+      if (isVowel(split_line[i])) {
         phonemes.push_back(split_line[i]);
         phonemes_str = split_line[i] + " " + phonemes_str;
         vowel_str = split_line[i] + " " + vowel_str;
         i++;
-      }
-      else {
-        std::string consonant = "";
-        while(i < split_line.size() && !isVowel(split_line[i])) {
-          consonant += split_line[i];
-          i++;
-        }
-        phonemes_str = consonant + " " + phonemes_str;
-        consonant_str = consonant + " " + consonant_str;
+      } else {
+        phonemes.push_back(split_line[i]);
+        phonemes_str = split_line[i] + " " + phonemes_str;
+        consonant_str = split_line[i] + " " + consonant_str;
+        i++;
       }
     }
     vowel_str = rstrip(vowel_str);
     consonant_str = rstrip(consonant_str);
     phonemes_str = rstrip(phonemes_str);
     const unsigned int &syllable_count = TokenMaker::countSyllables(phonemes);
-    return Token(word, phonemes, phonemes_str, vowel_str, consonant_str, syllable_count);
+    return Token(word, phonemes, phonemes_str, vowel_str, consonant_str,
+                 syllable_count);
   }
 
   static unsigned int countSyllables(const vector<string> &phonemes) {
@@ -109,40 +105,48 @@ struct TokenMaker {
 };
 
 struct DatabaseHandler {
-    static vector<string> makeValid10k(){
-        vector<string> ret;
-        ifstream readfile(VALID_10K_FILE);
-        if(!readfile){
-            throw runtime_error(std::string("Can't read file:") + VALID_10K_FILE);
-        }
-        string buffer;
-        while(getline(readfile, buffer)){
-            string uppercase;
-            for(unsigned int i = 0; i < buffer.size(); i++)
-                uppercase += toupper(buffer[i]);
-            ret.push_back(uppercase);
-        }
-        std::sort(ret.begin(), ret.end());
-        return ret;
+  static vector<string> makeValid10k() {
+    vector<string> ret;
+    ifstream readfile(VALID_10K_FILE);
+    if (!readfile) {
+      throw runtime_error(std::string("Can't read file:") + VALID_10K_FILE);
     }
-    static string insertToSmallDictQuery(const Token& token, vector<string>& valid10k){
-        for(vector<string>::iterator it = valid10k.begin(); it != valid10k.end(); it++){
-            if(*it == token.word){
-                std::string query = "INSERT INTO smallDict(word, phonemes, vowels, consonants, syllables)";
-                const std::string values = "VALUES('" + token.word + "', '" + token.phonemes_str +
-                                     "', '" + token.vowel_str + "', '" + token.consonant_str + "', " + to_string(token.syllables) + ")";
-                query += values;
-                valid10k.erase(it);
-                return query;
-            }
-        }
-        return "";
+    string buffer;
+    while (getline(readfile, buffer)) {
+      string uppercase;
+      for (unsigned int i = 0; i < buffer.size(); i++)
+        uppercase += toupper(buffer[i]);
+      ret.push_back(uppercase);
     }
-    static string insertToBigDictQuery(const Token &token) {
-    std::string query = "INSERT INTO bigDict(word, phonemes, vowels, consonants, syllables)";
+    std::sort(ret.begin(), ret.end());
+    return ret;
+  }
+  static string insertToSmallDictQuery(const Token &token,
+                                       vector<string> &valid10k) {
+    for (vector<string>::iterator it = valid10k.begin(); it != valid10k.end();
+         it++) {
+      if (*it == token.word) {
+        std::string query = "INSERT INTO smallDict(word, phonemes, vowels, "
+                            "consonants, syllables)";
+        const std::string values =
+            "VALUES('" + token.word + "', '" + token.phonemes_str + "', '" +
+            token.vowel_str + "', '" + token.consonant_str + "', " +
+            to_string(token.syllables) + ")";
+        query += values;
+        valid10k.erase(it);
+        return query;
+      }
+    }
+    return "";
+  }
+  static string insertToBigDictQuery(const Token &token) {
+    std::string query =
+        "INSERT INTO bigDict(word, phonemes, vowels, consonants, syllables)";
 
     std::string values = "VALUES('" + token.word + "', '" + token.phonemes_str +
-                         "', '" + token.vowel_str + "', '" + token.consonant_str + "', " + to_string(token.syllables) + ")";
+                         "', '" + token.vowel_str + "', '" +
+                         token.consonant_str + "', " +
+                         to_string(token.syllables) + ")";
     query += values;
     return query;
   }
