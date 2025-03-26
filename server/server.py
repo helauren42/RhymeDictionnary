@@ -42,15 +42,15 @@ class Cached():
             ret.append(await wordObj.toDict())
         return ret
     @staticmethod
-    async def getWord(word: str) -> list[dict]:
+    async def getWord(word: str) -> dict:
         wordObj = await rhyme_finder.findWord(word)
         return await wordObj.toDict()
     @staticmethod
     async def getRhymesList(word: str) -> list[dict]:
         try:
-            logging.info(f"found cached rhymes list")
             rhyme_list = Cached.rhymes[word]
             return await Cached.dictifyWord(rhyme_list)
+            logging.info(f"found cached rhymes list")
         except:
             logging.info(f"rhymes list wss not cached")
             logging.info(f"!!!word: {word}")

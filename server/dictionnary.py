@@ -80,7 +80,7 @@ class RhymeFinder(AbstractRhymeFinder):
         super().__init__()
 
     async def findWord(self, word:str) -> Word:
-        pos = self.rhymeDictPos(word)
+        pos = await self.rhymeDictPos(word)
         return self.rhymeDict[pos]
     
     async def findRhymesWord(self, word:str):

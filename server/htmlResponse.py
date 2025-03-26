@@ -13,7 +13,7 @@ class HtmlResponse():
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>RhymeDictionnary</title>
             <link rel="stylesheet" href="../static/css/index.css">
-            <script src="../static/js/index.js"></script>
+            <script type="module" src="../static/js/main.js"></script>
         </head>'''
     
     @staticmethod
@@ -21,7 +21,7 @@ class HtmlResponse():
         phoneme_index = 0
         phoneme_buttons = ""
         for phoneme in wordObj.phonemes:
-            phoneme_buttons = f''' <button class="phoneme-btn" id="phoneme-btn{phoneme_index}" onclick="handlePhonemeClick('{wordObj.word}', '{phoneme}', {wordObj.phonemes}, '{phoneme_index}')">{phoneme}</button> ''' + phoneme_buttons
+            phoneme_buttons = f''' <button class="phoneme-btn" id="{phoneme_index}" >{phoneme}</button> ''' + phoneme_buttons
             phoneme_index += 1
         return phoneme_buttons
 
