@@ -42,10 +42,8 @@ async function main() {
   const has_rhymes_list = document.getElementById("rhymes_list");
   if (has_rhymes_list) {
     let rhymes = await MakeRequest.fetchRhymes();
-    console.log("Response rhymes:", rhymes);
     phoneme_search.parseRhymesList(rhymes);
     let word = await MakeRequest.fetchWord();
-    console.log("Response word:", word);
     phoneme_search.parseSearchedWord(word);
   }
   search_input.addEventListener("keydown", (event) => {

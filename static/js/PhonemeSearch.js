@@ -1,4 +1,4 @@
-import { Word } from "./Word.js";
+import { Word, parseWord } from "./Word.js";
 
 export class PhonemeSearch {
   constructor() {
@@ -6,26 +6,29 @@ export class PhonemeSearch {
     this.searched_word = null;
     this.clicked_phoneme_indexes = [];
   }
-  parseRhymesList(data) {
-  }
-  parseSearchedWord(_searched_word) {
-    console.log(_searched_word);
-    let word = _searched_word["word"];
-    let phonemes = _searched_word["phonemes"];
-    let vowels = _searched_word["vowels"];
 
-    let consonants = _searched_word["consonants"];
-    console.log(phonemes);
-    console.log(vowels);
-    console.log(consonants);
-    this.searched_word = new Word(word, phonemes, vowels, consonants);
+  /**
+   * @param {Array<{word: string, phonemes: string[], vowels: string[], consonants: string[]}>} data
+   */
+  parseRhymesList(data) {
+    for (let i = 0; i < data.length; i++) {
+      try {
+        let wordObj = parseWord(data[i]);
+        this.rhymes_list.push(wordObj);
+      } catch (error) {
+        console.error("Error parsing word:", data[i], error);
+      }
+    }
+    // console.log("PARSED RHYMES LIST: ", this.rhymes_list);
+  }
+  parseSearchedWord(_searched_word_dict) {
+    this.searched_word = parseWord(_searched_word_dict);
   }
   handlePhonemeClick(word, phoneme, phonemes, phoneme_index) {
     // phoneme_index 0 is the last phoneme of the word
     let button = document.getElementById(phoneme_index);
-
     let current_word = word;
-    console.log("current word: ", current_word);
+
     console.log("Clicked phoneme:", phoneme);
     console.log("Phoneme index:", phoneme_index);
     console.log("Phonemes:", phonemes);
