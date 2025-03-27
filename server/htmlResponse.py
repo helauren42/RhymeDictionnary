@@ -43,7 +43,7 @@ class HtmlResponse():
         html_content = await HtmlResponse.getHead()
         html_content += f'''<body><h1 id="searched_word_baby">{wordObj.word}</h1><div id="searched-word-phonemes">'''
         phoneme_buttons = await HtmlResponse.getPhonemeButtons(wordObj)
-        html_content += phoneme_buttons + ''' </div>'''
+        html_content += phoneme_buttons + '''<button id="apply_button">apply</button></div>'''
 
         html_content += f'''<div id="search_block"><input type="search" placeholder="Find rhymes" id="search_input">
         <button id="search_button">search</button></div>'''
