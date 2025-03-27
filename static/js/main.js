@@ -80,6 +80,13 @@ async function main() {
         )
       })
     }
+    for (let i = phoneme_buttons.length - 1; i >= 0; i--) {
+      if (phoneme_buttons[i].innerText == word.vowels[0]) {
+        phoneme_buttons[i].dispatchEvent(new Event("click"));
+        break;
+      }
+    }
+
   }
 }
 
