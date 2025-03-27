@@ -34,10 +34,17 @@ const MakeRequest = {
   }
 }
 
-// onclick="handlePhonemeClick('{wordObj.word}', '{phoneme}', {wordObj.phonemes}, '{phoneme_index}')"
+function applyPhenomes() {
+  console.log("apply phonemes called");
+  phoneme_search.search();
+  // remove rhymes li 
+  // add new rhymes li
+}
+
 
 async function main() {
   const search_button = document.getElementById("search_button");
+  const apply_button = document.getElementById("apply_button");
   const search_input = document.getElementById("search_input");
   const has_rhymes_list = document.getElementById("rhymes_list");
   if (has_rhymes_list) {
@@ -51,6 +58,7 @@ async function main() {
   });
   search_button.addEventListener("click", () => MakeRequest.handleInput());
   const phoneme_buttons = document.getElementsByClassName("phoneme-btn");
+  apply_button.addEventListener("click", () => applyPhenomes());
   for (let i = 0; i < phoneme_buttons.length; i++) {
     phoneme_buttons[i].addEventListener("click", function() {
       phoneme_search.handlePhonemeClick(

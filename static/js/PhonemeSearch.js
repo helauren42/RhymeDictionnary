@@ -5,6 +5,7 @@ export class PhonemeSearch {
     this.rhymes_list = [];
     this.searched_word = null;
     this.clicked_phoneme_indexes = [];
+    this.filtered_rhyme_list = [];
   }
 
   /**
@@ -19,7 +20,6 @@ export class PhonemeSearch {
         console.error("Error parsing word:", data[i], error);
       }
     }
-    // console.log("PARSED RHYMES LIST: ", this.rhymes_list);
   }
   parseSearchedWord(_searched_word_dict) {
     this.searched_word = parseWord(_searched_word_dict);
@@ -46,5 +46,28 @@ export class PhonemeSearch {
       );
     }
     console.log("POST clicked indexes: ", this.clicked_phoneme_indexes);
+  }
+  search() {
+    this.filtered_rhyme_list = [];
+    let searchFor = {};
+    for (let index of this.clicked_phoneme_indexes) {
+      let phoneme = this.searched_word.phonemes[index];
+      let block_index = this.searched_word.getBlockIndex(phoneme, index);
+      searchFor[block_index] = phoneme;
+    }
+    console.log(searchFor);
+    for (let word of this.rhymes_list) {
+      let add = true;
+      for (let [block_index, phoneme] of Object.entries(searchFor)) {
+        // console.log("word object normally: ", word);
+        if (!word.hasBlock(block_index, phoneme)) {
+          add = false;
+          break;
+        }
+      }
+      if (add)
+        this.filtered_rhyme_list.push([word.word, word.phonemes]);
+    }
+    console.log(this.filtered_rhyme_list);
   }
 }

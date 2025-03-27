@@ -6,7 +6,6 @@ export class Word {
     this.consonants = _conso;
     this.blocks = [];
     this.makeBlocks();
-    console.log(this.blocks);
   }
   isVowel(phoneme) {
     if (this.vowels.includes(phoneme))
@@ -36,6 +35,34 @@ export class Word {
       }
       i++;
     }
+  }
+  getPhonemeDuplicateIndex(phoneme, phoneme_index) {
+    if (phoneme_index == 0)
+      return 0;
+    let ret = 0;
+    for (let i = phoneme_index - 1; i >= 0; i--) {
+      if (this.phonemes[i] == phoneme)
+        ret++;
+    }
+    return ret;
+  }
+  getBlockIndex(phoneme, phoneme_index) {
+    let phoneme_duplicate_index = this.getPhonemeDuplicateIndex(phoneme, phoneme_index);
+    let count = 0;
+    // console.log("dupe index: ", phoneme_duplicate_index);
+    for (let i = 0; i < this.blocks.length; i++) {
+      if (this.blocks[i].includes(phoneme)) {
+        if (count == phoneme_duplicate_index)
+          return i;
+        count++;
+      }
+    }
+    throw Error("get block index did not find block index");
+  }
+  hasBlock(block_index, phoneme) {
+    if (block_index >= this.blocks.length)
+      return false;
+    return this.blocks[block_index].includes(phoneme);
   }
 }
 
