@@ -4,16 +4,10 @@ import uvicorn
 import logging
 import sys
 import os
-from typing import Optional
-import mariadb
-from abc import ABC
 import time
-import asyncio
-import json
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from db import cursor
 from const import HOST, PORT, PROJECT_DIR
 from getValidWords import fetchValidWords
 from htmlResponse import HtmlResponse
@@ -37,7 +31,7 @@ class Cached():
                 Cached.rhymes.pop(word)
     @staticmethod
     async def dictifyWord(rhymes_list: list[Word]) -> list[dict]:
-        ret: list[dict[list]] = []
+        ret: list[dict] = []
         for wordObj in rhymes_list:
             ret.append(await wordObj.toDict())
         return ret
@@ -49,8 +43,8 @@ class Cached():
     async def getRhymesList(word: str) -> list[dict]:
         try:
             rhyme_list = Cached.rhymes[word]
-            return await Cached.dictifyWord(rhyme_list)
             logging.info(f"found cached rhymes list")
+            return await Cached.dictifyWord(rhyme_list)
         except:
             logging.info(f"rhymes list wss not cached")
             logging.info(f"!!!word: {word}")

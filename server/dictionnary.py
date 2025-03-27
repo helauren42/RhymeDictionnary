@@ -24,6 +24,8 @@ class AbstractRhymeFinder(ABC):
     def __init__(self):
         self.keyDict: dict[str,int] = {}  # key: words, value: pos in rhymeDict
         self.rhymeDict: list[Word] = []
+        self.keyDictBig: dict[str,int] = {}
+        self.rhymeDictBig: list[Word] = []
         self.buildDictionnaries()
         self.maxPos:int = len(self.rhymeDict)-1
 
@@ -37,12 +39,21 @@ class AbstractRhymeFinder(ABC):
             consonants = row[3]
             self.rhymeDict.append(Word(row[0], phonemes, row[1], consonants))
             pos += 1
+        cursor.execute('''SELECT word, vowels, phonemes, consonants FROM bigDict ORDER BY vowels, phonemes''')
+        rows = cursor.fetchall()
+        pos: int = 0
+        for row in rows:
+            self.keyDictBig[row[0]] = pos
+            phonemes = row[2]
+            consonants = row[3]
+            self.rhymeDictBig.append(Word(row[0], phonemes, row[1], consonants))
+            pos += 1
 
     async def rhymeDictPos(self, word:str) -> int:
         pos = self.keyDict[word]
         return pos
 
-    async def getBasicRhymes(self, word:str, pos: int) -> list[Word]:
+    async def getBasicRhymes(self, word:str, pos: int) -> tuple[list[Word], int]:
         posmin = pos -1
         posmax = pos +1
         end_vowel = self.rhymeDict[posmin].vowels[0]
