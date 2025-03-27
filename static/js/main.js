@@ -34,40 +34,52 @@ const MakeRequest = {
   }
 }
 
-function applyPhenomes() {
-  console.log("apply phonemes called");
-  phoneme_search.search();
-  // remove rhymes li 
-  // add new rhymes li
+function removeLi() {
+  const rhymes_list = document.getElementById("rhymes_list");
+  rhymes_list.innerHTML = "";
 }
 
+function addLi() {
+  const rhymes_list = document.getElementById("rhymes_list");
+  for (let obj of phoneme_search.filtered_rhyme_list) {
+    rhymes_list.innerHTML += "<li>" + obj[0] + '<span class="phonemes">(' + obj[1] + ")";
+    rhymes_list.innerHTML += "</span></li>"
+  }
+}
+
+function applyPhenomes() {
+  phoneme_search.search();
+  if (phoneme_search.filtered_rhyme_list.length == phoneme_search.rhymes_list.length) {
+    return;
+  }
+  removeLi();
+  addLi();
+}
 
 async function main() {
   const search_button = document.getElementById("search_button");
   const apply_button = document.getElementById("apply_button");
   const search_input = document.getElementById("search_input");
   const has_rhymes_list = document.getElementById("rhymes_list");
+  const phoneme_buttons = document.getElementsByClassName("phoneme-btn");
+  search_input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") MakeRequest.handleInput();
+  });
+  search_button.addEventListener("click", () => MakeRequest.handleInput());
   if (has_rhymes_list) {
     let rhymes = await MakeRequest.fetchRhymes();
     phoneme_search.parseRhymesList(rhymes);
     let word = await MakeRequest.fetchWord();
     phoneme_search.parseSearchedWord(word);
-  }
-  search_input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") MakeRequest.handleInput();
-  });
-  search_button.addEventListener("click", () => MakeRequest.handleInput());
-  const phoneme_buttons = document.getElementsByClassName("phoneme-btn");
-  apply_button.addEventListener("click", () => applyPhenomes());
-  for (let i = 0; i < phoneme_buttons.length; i++) {
-    phoneme_buttons[i].addEventListener("click", function() {
-      phoneme_search.handlePhonemeClick(
-        phoneme_search.searched_word.word,
-        this.textContent,
-        phoneme_search.searched_word.phonemes,
-        this.id
-      )
-    })
+    apply_button.addEventListener("click", () => applyPhenomes());
+    for (let i = 0; i < phoneme_buttons.length; i++) {
+      phoneme_buttons[i].addEventListener("click", function() {
+        phoneme_search.handlePhonemeClick(
+          this.textContent,
+          this.id
+        )
+      })
+    }
   }
 }
 

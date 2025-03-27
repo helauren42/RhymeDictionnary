@@ -24,15 +24,12 @@ export class PhonemeSearch {
   parseSearchedWord(_searched_word_dict) {
     this.searched_word = parseWord(_searched_word_dict);
   }
-  handlePhonemeClick(word, phoneme, phonemes, phoneme_index) {
+  handlePhonemeClick(phoneme, phoneme_index) {
     // phoneme_index 0 is the last phoneme of the word
     let button = document.getElementById(phoneme_index);
-    let current_word = word;
 
     console.log("Clicked phoneme:", phoneme);
     console.log("Phoneme index:", phoneme_index);
-    console.log("Phonemes:", phonemes);
-    console.log("PRE click indexes: ", this.clicked_phoneme_indexes);
 
     if (button.className == "phoneme-btn") {
       button.classList.remove("phoneme-btn");
@@ -45,7 +42,13 @@ export class PhonemeSearch {
         (index) => index != parseInt(phoneme_index),
       );
     }
-    console.log("POST clicked indexes: ", this.clicked_phoneme_indexes);
+  }
+  phenomes_str(listPhonemes) {
+    let str = "";
+    for (let string of listPhonemes)
+      str = string + " " + str;
+    str = str.trimEnd();
+    return str;
   }
   search() {
     this.filtered_rhyme_list = [];
@@ -66,8 +69,7 @@ export class PhonemeSearch {
         }
       }
       if (add)
-        this.filtered_rhyme_list.push([word.word, word.phonemes]);
+        this.filtered_rhyme_list.push([word.word, this.phenomes_str(word.phonemes)]);
     }
-    console.log(this.filtered_rhyme_list);
   }
 }
