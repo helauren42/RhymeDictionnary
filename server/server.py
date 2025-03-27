@@ -37,7 +37,7 @@ class Cached():
         return ret
     @staticmethod
     async def getWord(word: str) -> dict:
-        wordObj = await rhyme_finder.findWord(word)
+        wordObj, pos, small = await rhyme_finder.findWord(word)
         return await wordObj.toDict()
     @staticmethod
     async def getRhymesList(word: str) -> list[dict]:
@@ -102,7 +102,6 @@ async def search(word:str):
     logging.info(f"received string: {word}")
     if word not in VALID_WORDS:
         return Response(content="Error: word not found in database", status_code=400)
-    # search_path = PROJECT_DIR + "static/html/search.html"
     rhymes, wordObj = await rhyme_finder.findRhymesWord(word)
     html_content =  await HtmlResponse.buildSearchResultsPage(wordObj=wordObj, rhymes=rhymes)
     return responses.HTMLResponse(content=html_content)

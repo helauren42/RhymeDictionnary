@@ -53,17 +53,22 @@ class AbstractRhymeFinder(ABC):
         pos = self.keyDict[word]
         return pos
 
-    async def getBasicRhymes(self, word:str, pos: int) -> tuple[list[Word], int]:
+    async def rhymeDictPosBig(self, word:str) -> int:
+        pos = self.keyDictBig[word]
+        return pos
+
+    async def getBasicRhymes(self, word:str, pos: int, small=True) -> tuple[list[Word], int]:
+        dictionnary = self.rhymeDict if small == True else self.rhymeDictBig
         posmin = pos -1
         posmax = pos +1
-        end_vowel = self.rhymeDict[posmin].vowels[0]
-        while posmin > 0 and self.rhymeDict[posmin-1].vowels[0] == end_vowel:
+        end_vowel = dictionnary[posmin].vowels[0]
+        while posmin > 0 and dictionnary[posmin-1].vowels[0] == end_vowel:
             posmin -= 1
-        while posmax < self.maxPos and self.rhymeDict[posmax+1].vowels[0] == end_vowel:
+        while posmax < self.maxPos and dictionnary[posmax+1].vowels[0] == end_vowel:
             posmax += 1
         logging.info(f"posmin: {posmin}")
         logging.info(f"posmax: {posmax}")
-        return (self.rhymeDict[posmin:posmax], pos - posmin)
+        return (dictionnary[posmin:posmax], pos - posmin)
 
     async def orderRhymesList(self, rhymes: list[Word], wordObj:Word, pos:int) -> list[Word]:
         posmin = pos -1
@@ -90,14 +95,17 @@ class RhymeFinder(AbstractRhymeFinder):
     def __init__(self):
         super().__init__()
 
-    async def findWord(self, word:str) -> Word:
-        pos = await self.rhymeDictPos(word)
-        return self.rhymeDict[pos]
-    
+    async def findWord(self, word:str) -> tuple[Word, int, bool]:
+        try:
+            pos = await self.rhymeDictPos(word)
+            return self.rhymeDict[pos], pos, True
+        except:
+            pos = await self.rhymeDictPosBig(word)
+            return self.rhymeDictBig[pos], pos, False
+
     async def findRhymesWord(self, word:str):
-        pos = self.keyDict[word]
-        wordObj = self.rhymeDict[pos]
-        rhymes, pos = await self.getBasicRhymes(word, pos)
+        wordObj, pos, small = await self.findWord(word)
+        rhymes, pos = await self.getBasicRhymes(word, pos, small)
         if len(wordObj.phonemes) >= 2:
             rhymes = await  self.orderRhymesList(rhymes, wordObj, pos)
         return rhymes, wordObj
