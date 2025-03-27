@@ -76,7 +76,6 @@ class AbstractRhymeFinder(ABC):
         minList = rhymes[0:posmin+1]
         maxList = rhymes[:posmax-1:-1]
         matchPhonemes = (wordObj.phonemes[0], wordObj.phonemes[1])
-        matchConsonant = wordObj.consonants[0]
         refined: list[Word] = []
         # c++ remove phonemes if size < 2
         while (minList[-1].phonemes[0], minList[-1].phonemes[1]) == matchPhonemes:
