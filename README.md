@@ -1,11 +1,4 @@
 # Rhyme Dictionary
 
-## Prerequisites
-
-- Python 3.8 or higher
-- MySQL Server
-- pip (Python package manager)
-
-# System
-
+it works, let me host and maybe make that front end pretty.
 
